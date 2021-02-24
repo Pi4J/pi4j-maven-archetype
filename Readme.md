@@ -1,4 +1,13 @@
-# A maven archtype to generate PI4J V2 project skeletons
+# A maven archetype to generate PI4J V2 project skeletons
+This Maven archetype can generate PI4J-V2 project templates with remote build, run and debug capability.
+A template project generated with this archetype can:
+
+- Handle a connection to many RPI targets, configured in the pom.xml file
+- Compile your code, packing the compiled code in a jar, uploading it and all the other required jars on the selected remote target
+- Run the program on the remote target
+- Open a remote debugging session
+
+The archetype is IDE agnostic (I tested it using Netbeans) and depends only on maven and ant. 
 ## How to install the archetype to your local .m2 repository
 - Unzip the archtype file in a _folder_
 - `cd folder/raspimaven-archetype`
