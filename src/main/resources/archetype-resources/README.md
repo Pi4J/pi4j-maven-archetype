@@ -30,12 +30,13 @@ The project declares in the _pom.xml_ the following maven/ant goals that you can
 - `mvn antrun:run@debug` : runs a remote debugging session on the target RPI.
 
 All the modern IDE programs have a mechanism to configure new GUI commands linked to a specific maven goal. See below for an example of such a
-GUI configurarion of the Netbeans IDE.
+GUI configuration of the Netbeans IDE.
 
 ### Note on running a debug session
 To start a debugging session: 
-- run the command `mvn antrun:run@debug`, the program on the remote target will be started with JVM in debug mode
+- run the command `mvn antrun:run@debug`, the program on the remote target starts with JVM in debug mode, waiting for a debugger connection on the port configured for the target
 - in your IDE start the debugger setting the host IP = _target IP_ and port = _port configured in raspberry.properties_
+You should be able to set remote breakpoints, execute step by step, examine variables on your remote program.
 
 ## Some final notes ##
 ### PI4J version
