@@ -34,7 +34,7 @@ Before starting the new project generation, the archetype asks you some configur
 
 The archetype now presents to you a summary of the configuration parameters you have just typed in, plus the values proposed for the _main-class_ and _package_ parameters.
 If the list is ok for you, reply _Y_ to accept, otherwise reply _N_ to change one or more values (you will have to re-type all parameter values ...)
-Op
+
 After the list confirmation, the archetype generates a new maven project for you. You should be able to open the new project with your preferred java IDE. The IDE should be able
 to recognize the project as a valid Maven project.
 
