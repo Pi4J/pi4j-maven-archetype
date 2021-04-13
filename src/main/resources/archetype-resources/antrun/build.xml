@@ -54,6 +54,21 @@
 		<property name="local.dist.jar" value="${symbol_dollar}{local.dist.dir}/${symbol_dollar}{dist.jar.name}.${symbol_dollar}{project.packaging}"/>
 		<property name="remote.dist.fatjar" value="${symbol_dollar}{remote.dist.dir}/${symbol_dollar}{dist.jar.name}-jar-with-dependencies.${symbol_dollar}{project.packaging}"/>
 		<property name="local.dist.fatjar" value="${symbol_dollar}{local.dist.dir}/${symbol_dollar}{dist.jar.name}-jar-with-dependencies.${symbol_dollar}{project.packaging}"/>
+
+		<fail message="The 'target.run.module.class' property must be set in ${symbol_dollar}{target.platform.filename} if 'run.with.java.module'=true in the 'pom.xml'.">
+			<condition>
+				<and>
+					<equals arg1="${symbol_dollar}{target.run.as.module}" arg2="true" casesensitive="" />
+					<not>
+						<isset property="target.run.module.class"/>
+					</not>
+				</and>
+			</condition>
+		</fail>
+
+		<condition property="project.run.cmd" value="-p ${symbol_dollar}{remote.dist.dir}/lib -m ${symbol_dollar}{target.run.module.class}" else="-jar ${symbol_dollar}{remote.dist.jar}">
+			<equals arg1="${symbol_dollar}{target.run.as.module}" arg2="true" casesensitive="" />
+		</condition>
 	</target>
 
 	<target name="-check-fatjar" depends="-init">
@@ -108,7 +123,7 @@
 			<sequential>
 				<!--antcall target="profile-rp-calibrate-passwd"/-->
 				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true" usepty="true"
-								 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} -jar ${symbol_dollar}{remote.dist.jar} ${symbol_dollar}{remote.application.args}"/>
+								 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} ${symbol_dollar}{project.run.cmd} ${symbol_dollar}{remote.application.args}"/>
 			</sequential>
 		</macrodef>
 		<macrodef name="runwithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
@@ -116,7 +131,7 @@
 			<sequential>
 				<!--antcall target="profile-rp-calibrate-key"/-->
 				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" usepty="true"
-								 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} -jar ${symbol_dollar}{remote.dist.jar} ${symbol_dollar}{remote.application.args}"/>
+								 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} ${symbol_dollar}{project.run.cmd} ${symbol_dollar}{remote.application.args}"/>
 			</sequential>
 		</macrodef>
 	</target>
