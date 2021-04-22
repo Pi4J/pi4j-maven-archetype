@@ -10,7 +10,7 @@ module ${groupId}.${artifactId} {
     uses com.pi4j.provider.Provider;
 
     // allow access to classes in the following namespaces for Pi4J annotation processing
-    opens {package} to com.pi4j;
+    opens ${package} to com.pi4j;
 
     //exports ${package};
 }
