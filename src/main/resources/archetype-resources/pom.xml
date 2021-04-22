@@ -1,242 +1,242 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>${groupId}</groupId>
-	<artifactId>${artifactId}</artifactId>
-	<version>${version}</version>
-	<packaging>jar</packaging>
-	<name>${project-name}</name>
-	<!--organization>
-		<name></name>
-		<url></url>
-	</organization-->
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<target.platform.name>raspberry</target.platform.name>
-		<run.with.java.module>${useJavaPlatformModuleSystem}</run.with.java.module>
-<!--		Use jvmargs to pass args like -Dpi4j.library.path=<Path to the libpi4j-pigpio.so library>-->
-		<jvmargs.run></jvmargs.run>
-		<jvmargs.debug></jvmargs.debug>
-		
-		<slf4j.version>2.0.0-alpha1</slf4j.version>
-		<pi4j.version>2.0-SNAPSHOT</pi4j.version>
-	</properties>
-	
-	<repositories>
-		<repository>
-			<id>oss-snapshots-repo</id>
-			<name>Sonatype OSS Maven Repository</name>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<releases>
-			</releases>
-			<snapshots>
-			</snapshots>
-		</repository>
-	</repositories>
-		
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
+    <packaging>jar</packaging>
+    <name>${project-name}</name>
+    <!--organization>
+        <name></name>
+        <url></url>
+    </organization-->
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <target.platform.name>raspberry</target.platform.name>
+        <run.with.java.module>${useJavaPlatformModuleSystem}</run.with.java.module>
+<!--        Use jvmargs to pass args like -Dpi4j.library.path=<Path to the libpi4j-pigpio.so library>-->
+        <jvmargs.run></jvmargs.run>
+        <jvmargs.debug></jvmargs.debug>
+        
+        <slf4j.version>2.0.0-alpha1</slf4j.version>
+        <pi4j.version>2.0-SNAPSHOT</pi4j.version>
+    </properties>
+    
+    <repositories>
+        <repository>
+            <id>oss-snapshots-repo</id>
+            <name>Sonatype OSS Maven Repository</name>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+            <releases>
+            </releases>
+            <snapshots>
+            </snapshots>
+        </repository>
+    </repositories>
+        
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
-		<!-- include Pi4J Core -->
-		<dependency>
-			<groupId>com.pi4j</groupId>
-			<artifactId>pi4j-core</artifactId>
-			<version>${pi4j.version}</version>
-		</dependency>
+        <!-- include Pi4J Core -->
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
 
-		<!-- include Pi4J Plugins (Platforms and I/O Providers) -->
-		<dependency>
-			<groupId>com.pi4j</groupId>
-			<artifactId>pi4j-plugin-raspberrypi</artifactId>
-			<version>${pi4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.pi4j</groupId>
-			<artifactId>pi4j-plugin-pigpio</artifactId>
-			<version>${pi4j.version}</version>
-		</dependency>
-	</dependencies>
-		
-	<build>
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<release>${maven.compiler.source}</release>
-					<target>${maven.compiler.target}</target>
-					<showDeprecation>true</showDeprecation>
-					<showWarnings>true</showWarnings>
-					<verbose>false</verbose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.2</version>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<stripVersion>true</stripVersion>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathLayoutType>custom</classpathLayoutType>
-							<customClasspathLayout>lib/${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
-							<mainClass>${package}.${main-class}</mainClass>
-						</manifest>
-					</archive>
-					<outputDirectory>${finalJarDir}</outputDirectory>
-				</configuration>
-			</plugin>
-			<!--plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.3.0</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<archive>
-								<manifest>
-									<addDefaultImplementationEntries/>
-									<mainClass>it.lb.rasp.rasp01.Rasp01</mainClass>
-								</manifest>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin-->
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>setMavenJarPluginOutputDir</id>
-						<phase>compile</phase>
-						<configuration>
-							<exportAntProperties>true</exportAntProperties>
-							<target>
-								<condition property="finalJarDir" value="${project.build.directory}/lib" else="${project.build.directory}">
-									<equals arg1="${run.with.java.module}" arg2="true" casesensitive="" />
-								</condition>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>clean</id>
-						<phase>clean</phase>
-						<configuration>
-							<target>
-								<property name="local.dist.dir" value="${project.build.directory}" />		
-								<property name="remote.runtime.encoding" value="UTF-8" />
-								<property name="dist.jar.name" value="${project.build.finalName}" />		
-								<ant antfile="antrun/build.xml" target="clean-remote" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>build</id>
-						<phase>install</phase>
-						<configuration>
-							<target>
-								<property name="local.dist.dir" value="${project.build.directory}" />		
-								<property name="remote.runtime.encoding" value="UTF-8" />
-								<property name="dist.jar.name" value="${project.build.finalName}" />		
-								<ant antfile="antrun/build.xml" target="build-remote" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>exec</id>
-						<configuration>
-							<target>
-								<property name="remote.run.jvmargs" value="${jvmargs.run}" />
-								<property name="target.run.as.module" value="${run.with.java.module}" />
-								<property name="local.dist.dir" value="${project.build.directory}" />		
-								<property name="remote.runtime.encoding" value="UTF-8" />
-								<property name="dist.jar.name" value="${project.build.finalName}" />		
-								<ant antfile="antrun/build.xml" target="run-remote" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>debug</id>
-						<configuration>
-							<target>
-								<property name="remote.debug.jvmargs" value="${jvmargs.debug}" />
-								<property name="target.run.as.module" value="${run.with.java.module}" />
-								<property name="local.dist.dir" value="${project.build.directory}" />		
-								<property name="remote.runtime.encoding" value="UTF-8" />
-								<property name="dist.jar.name" value="${project.build.finalName}" />		
-								<ant antfile="antrun/build.xml" target="debug-remote" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>com.jcraft</groupId>
-						<artifactId>jsch</artifactId>
-						<version>0.1.55</version>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.ant</groupId>
-						<artifactId>ant-jsch</artifactId>
-						<version>1.10.8</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- include Pi4J Plugins (Platforms and I/O Providers) -->
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-raspberrypi</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-pigpio</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+    </dependencies>
+        
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <release>${maven.compiler.source}</release>
+                    <target>${maven.compiler.target}</target>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <verbose>false</verbose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <stripVersion>true</stripVersion>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>lib/${artifact.artifactId}.${artifact.extension}</customClasspathLayout>
+                            <mainClass>${package}.${main-class}</mainClass>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>${finalJarDir}</outputDirectory>
+                </configuration>
+            </plugin>
+            <!--plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addDefaultImplementationEntries/>
+                                    <mainClass>it.lb.rasp.rasp01.Rasp01</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>setMavenJarPluginOutputDir</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="finalJarDir" value="${project.build.directory}/lib" else="${project.build.directory}">
+                                    <equals arg1="${run.with.java.module}" arg2="true" casesensitive="" />
+                                </condition>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <target>
+                                <property name="local.dist.dir" value="${project.build.directory}" />        
+                                <property name="remote.runtime.encoding" value="UTF-8" />
+                                <property name="dist.jar.name" value="${project.build.finalName}" />        
+                                <ant antfile="antrun/build.xml" target="clean-remote" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>build</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <property name="local.dist.dir" value="${project.build.directory}" />        
+                                <property name="remote.runtime.encoding" value="UTF-8" />
+                                <property name="dist.jar.name" value="${project.build.finalName}" />        
+                                <ant antfile="antrun/build.xml" target="build-remote" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec</id>
+                        <configuration>
+                            <target>
+                                <property name="remote.run.jvmargs" value="${jvmargs.run}" />
+                                <property name="target.run.as.module" value="${run.with.java.module}" />
+                                <property name="local.dist.dir" value="${project.build.directory}" />        
+                                <property name="remote.runtime.encoding" value="UTF-8" />
+                                <property name="dist.jar.name" value="${project.build.finalName}" />        
+                                <ant antfile="antrun/build.xml" target="run-remote" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>debug</id>
+                        <configuration>
+                            <target>
+                                <property name="remote.debug.jvmargs" value="${jvmargs.debug}" />
+                                <property name="target.run.as.module" value="${run.with.java.module}" />
+                                <property name="local.dist.dir" value="${project.build.directory}" />        
+                                <property name="remote.runtime.encoding" value="UTF-8" />
+                                <property name="dist.jar.name" value="${project.build.finalName}" />        
+                                <ant antfile="antrun/build.xml" target="debug-remote" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.jcraft</groupId>
+                        <artifactId>jsch</artifactId>
+                        <version>0.1.55</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-jsch</artifactId>
+                        <version>1.10.8</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 </project>
