@@ -3,201 +3,216 @@
 #set( $symbol_escape = '\' )
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="RemotePlatform" default="default" basedir=".." xmlns:remote="http://www.netbeans.org/ns/j2se-project/remote-platform/1" xmlns:j2seproject1="http://www.netbeans.org/ns/j2se-project/1" xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3">
-	<description></description>
-	<target name="default">
-		<echo message="Default target is not set, you must specify which target you want to run."/>
-	</target>
-		
-	<target name="-init">
-		<property name="remote.run.jvmargs" value=""/>
-		<property name="remote.debug.jvmargs" value=""/>
-		<property name="remote.debug.suspend" value="y"/>
-		<property name="remote.application.args" value=""/>
-		
-		<fail unless="target.platform.name">Remote platform name must be set.</fail>
-		<property name="target.platform.filename" value="./platform/${symbol_dollar}{target.platform.name}.properties"/>
-		<property file="${symbol_dollar}{target.platform.filename}"/>
-		<fail unless="target.platform.host">'target.platform.host' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
-		<fail unless="target.platform.port">'target.platform.port' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
-		<fail unless="target.platform.username">'target.platform.username' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
-		<condition property="remote.platform.auth.passwd">
-			<isset property="target.platform.password"/>
-		</condition>
-		<condition property="remote.platform.auth.key">
-			<and>
-				<not>
-					<isset property="remote.platform.auth.passwd"/>
-				</not>
-				<isset property="target.platform.privatekey"/>
-				<isset property="target.platform.passphrase"/>
-			</and>
-		</condition>
-		<condition property="auth.ok">
-			<or>
-				<isset property="remote.platform.auth.passwd"/>
-				<isset property="remote.platform.auth.key"/>
-			</or>
-		</condition>
-		<condition property="run.mode" value="sudo">
-			<equals arg1="${symbol_dollar}{target.run.as.root}" arg2="true" casesensitive="" />
-		</condition>
-		<property name="run.mode" value=""/>
-		<fail unless="auth.ok">Either 'target.platform.password' or 'target.platform.privatekey' + 'target.platform.passphrase' properties must be set in ${symbol_dollar}{target.platform.filename}.</fail>
-		<fail unless="target.remote.jre">'target.remote.jre' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
-		<fail unless="target.remote.home">'target.remote.home' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
-		<!--basename file="${symbol_dollar}{dist.jar}" property="dist.jar.name"/-->
-		<basename file="${symbol_dollar}{basedir}" property="remote.project.name"/>
-		<property name="remote.project.dir" value="${symbol_dollar}{target.remote.home}/${symbol_dollar}{remote.project.name}"/>
-		<property name="remote.dist.dir" value="${symbol_dollar}{remote.project.dir}/dist"/>
-		<property name="remote.java.executable" value="${symbol_dollar}{target.remote.jre}/bin/java"/>	
-		<property name="remote.dist.jar" value="${symbol_dollar}{remote.dist.dir}/${symbol_dollar}{dist.jar.name}.${symbol_dollar}{project.packaging}"/>
-		<property name="local.dist.jar" value="${symbol_dollar}{local.dist.dir}/${symbol_dollar}{dist.jar.name}.${symbol_dollar}{project.packaging}"/>
-		<property name="remote.dist.fatjar" value="${symbol_dollar}{remote.dist.dir}/${symbol_dollar}{dist.jar.name}-jar-with-dependencies.${symbol_dollar}{project.packaging}"/>
-		<property name="local.dist.fatjar" value="${symbol_dollar}{local.dist.dir}/${symbol_dollar}{dist.jar.name}-jar-with-dependencies.${symbol_dollar}{project.packaging}"/>
-	</target>
+    <description></description>
+    <target name="default">
+        <echo message="Default target is not set, you must specify which target you want to run."/>
+    </target>
 
-	<target name="-check-fatjar" depends="-init">
-		<available file="${symbol_dollar}{local.dist.fatjar}" property="fatjar.exist"/>
-	</target>
-	
-	<target name="-rename-fatjar" depends="-check-fatjar" if="fatjar.exist">
-		<move file="${symbol_dollar}{local.dist.fatjar}" tofile="${symbol_dollar}{local.dist.jar}"/>
-	</target>
-	
-	<target name="-declare-macros" depends="-rename-fatjar">
-		<macrodef name="cleanwithpasswd" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
-			<sequential>
-				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" 
-								 password="${symbol_dollar}{target.platform.password}" trust="true" 
-								 command="cd '${symbol_dollar}{remote.dist.dir}'; rm -rf *.jar lib/*.jar"/>
-			</sequential>
-		</macrodef>
-		<macrodef name="cleanwithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
-			<sequential>
-				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}"
-								 keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" 
-								 command="cd '${symbol_dollar}{remote.dist.dir}'; rm -rf *.jar lib/*.jar"/>
-			</sequential>
-		</macrodef>
-		<macrodef name="copywithpasswd" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
-			<attribute name="additionaljvmargs" default=""/>
-			<sequential>
-				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true" command="mkdir -p '${symbol_dollar}{remote.dist.dir}'"/>
-				<scp todir="${symbol_dollar}{target.platform.username}@${symbol_dollar}{target.platform.host}:${symbol_dollar}{remote.dist.dir}" port="${symbol_dollar}{target.platform.port}" password="${symbol_dollar}{target.platform.password}" trust="true">
-					<fileset dir="${symbol_dollar}{local.dist.dir}">
-						<include name="*.${symbol_dollar}{project.packaging}"/>
-						<include name="lib/*.${symbol_dollar}{project.packaging}"/>
-					</fileset>
-				</scp>
-			</sequential>
-		</macrodef>
-		<macrodef name="copywithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
-			<attribute name="additionaljvmargs" default=""/>
-			<sequential>
-				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" command="mkdir -p '${symbol_dollar}{remote.dist.dir}'"/>
-				<scp todir="${symbol_dollar}{target.platform.username}@${symbol_dollar}{target.platform.host}:${symbol_dollar}{remote.dist.dir}" port="${symbol_dollar}{target.platform.port}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true">
-					<fileset dir="${symbol_dollar}{local.dist.dir}">
-						<include name="*.${symbol_dollar}{project.packaging}"/>
-						<include name="lib/*.${symbol_dollar}{project.packaging}"/>
-					</fileset>
-				</scp>
-			</sequential>
-		</macrodef>
-		<macrodef name="runwithpasswd" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
-			<attribute name="additionaljvmargs" default=""/>
-			<sequential>
-				<!--antcall target="profile-rp-calibrate-passwd"/-->
-				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true" usepty="true"
-								 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} -jar ${symbol_dollar}{remote.dist.jar} ${symbol_dollar}{remote.application.args}"/>
-			</sequential>
-		</macrodef>
-		<macrodef name="runwithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
-			<attribute name="additionaljvmargs" default=""/>
-			<sequential>
-				<!--antcall target="profile-rp-calibrate-key"/-->
-				<sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" usepty="true"
-								 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} -jar ${symbol_dollar}{remote.dist.jar} ${symbol_dollar}{remote.application.args}"/>
-			</sequential>
-		</macrodef>
-	</target>
-		
-	<target name="-ask-password" unless="target.platform.password" if="remote.platform.auth.passwd">
-		<input message="Password ${symbol_dollar}{target.platform.user}@${symbol_dollar}{target.platform.host}:" addproperty="target.platform.password">
-			<handler type="secure"/>
-		</input>
-	</target>
+    <target name="-init">
+        <property name="remote.run.jvmargs" value=""/>
+        <property name="remote.debug.jvmargs" value=""/>
+        <property name="remote.debug.suspend" value="y"/>
+        <property name="remote.application.args" value=""/>
+        
+        <fail unless="target.platform.name">Remote platform name must be set.</fail>
+        <property name="target.platform.filename" value="./platform/${symbol_dollar}{target.platform.name}.properties"/>
+        <property file="${symbol_dollar}{target.platform.filename}"/>
+        <fail unless="target.platform.host">'target.platform.host' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
+        <fail unless="target.platform.port">'target.platform.port' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
+        <fail unless="target.platform.username">'target.platform.username' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
+        <condition property="remote.platform.auth.passwd">
+            <isset property="target.platform.password"/>
+        </condition>
+        <condition property="remote.platform.auth.key">
+            <and>
+                <not>
+                    <isset property="remote.platform.auth.passwd"/>
+                </not>
+                <isset property="target.platform.privatekey"/>
+                <isset property="target.platform.passphrase"/>
+            </and>
+        </condition>
+        <condition property="auth.ok">
+            <or>
+                <isset property="remote.platform.auth.passwd"/>
+                <isset property="remote.platform.auth.key"/>
+            </or>
+        </condition>
+        <condition property="run.mode" value="sudo">
+            <equals arg1="${symbol_dollar}{target.run.as.root}" arg2="true" casesensitive="" />
+        </condition>
+        <property name="run.mode" value=""/>
+        <fail unless="auth.ok">Either 'target.platform.password' or 'target.platform.privatekey' + 'target.platform.passphrase' properties must be set in ${symbol_dollar}{target.platform.filename}.</fail>
+        <fail unless="target.remote.jre">'target.remote.jre' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
+        <fail unless="target.remote.home">'target.remote.home' property is missing in ${symbol_dollar}{target.platform.filename}.</fail>
+        <!--basename file="${symbol_dollar}{dist.jar}" property="dist.jar.name"/-->
+        <basename file="${symbol_dollar}{basedir}" property="remote.project.name"/>
+        <property name="remote.project.dir" value="${symbol_dollar}{target.remote.home}/${symbol_dollar}{remote.project.name}"/>
+        <property name="remote.dist.dir" value="${symbol_dollar}{remote.project.dir}/dist"/>
+        <property name="remote.java.executable" value="${symbol_dollar}{target.remote.jre}/bin/java"/>    
+        <property name="remote.dist.jar" value="${symbol_dollar}{remote.dist.dir}/${symbol_dollar}{dist.jar.name}.${symbol_dollar}{project.packaging}"/>
+        <property name="local.dist.jar" value="${symbol_dollar}{local.dist.dir}/${symbol_dollar}{dist.jar.name}.${symbol_dollar}{project.packaging}"/>
+        <property name="remote.dist.fatjar" value="${symbol_dollar}{remote.dist.dir}/${symbol_dollar}{dist.jar.name}-jar-with-dependencies.${symbol_dollar}{project.packaging}"/>
+        <property name="local.dist.fatjar" value="${symbol_dollar}{local.dist.dir}/${symbol_dollar}{dist.jar.name}-jar-with-dependencies.${symbol_dollar}{project.packaging}"/>
 
-	<target name="-ask-passphrase" unless="target.platform.passphrase" if="remote.platform.auth.key">
-		<input message="Passphrase ${symbol_dollar}{target.platform.user}@${symbol_dollar}{target.platform.host}:" addproperty="target.platform.passphrase">
-			<handler type="secure"/>
-		</input>
-	</target>
+        <fail message="The 'target.run.module.class' property must be set in ${symbol_dollar}{target.platform.filename} if 'run.with.java.module'=true in the 'pom.xml'.">
+            <condition>
+                <and>
+                    <equals arg1="${symbol_dollar}{target.run.as.module}" arg2="true" casesensitive="" />
+                    <not>
+                        <isset property="target.run.module.class"/>
+                    </not>
+                </and>
+            </condition>
+        </fail>
 
-	<target name="-check-vm-debug" depends="-init">
-		<condition property="remote.debug.available" value="true">
-			<or>
-				<istrue value="${symbol_dollar}{target.debug.supported}"/>
-			</or>
-		</condition>
-		<fail unless="remote.debug.available" message="The Runtime JVM ${symbol_dollar}{target.platform.host} does not support debugging."/>
-	</target>
+        <condition property="project.run.cmd" value="-p ${symbol_dollar}{remote.dist.dir}/lib -m ${symbol_dollar}{target.run.module.class}" else="-jar ${symbol_dollar}{remote.dist.jar}">
+            <equals arg1="${symbol_dollar}{target.run.as.module}" arg2="true" casesensitive="" />
+        </condition>
+    </target>
 
-	<target name="-copy-remote-passwd" depends="-init, -declare-macros, -ask-password" if="remote.platform.auth.passwd">
-		<remote:copywithpasswd/>
-	</target>
-		
-	<target name="-copy-remote-key" depends="-init, -declare-macros, -ask-passphrase" if="remote.platform.auth.key">
-		<remote:copywithkey/>
-	</target>
-
-	<target name="-run-remote-passwd" depends="-init, -declare-macros, -ask-password, -copy-remote-passwd" if="remote.platform.auth.passwd">
-		<remote:runwithpasswd/>
-	</target>
-		
-	<target name="-run-remote-key" depends="-init, -declare-macros, -ask-passphrase, -copy-remote-key" if="remote.platform.auth.key">
-		<remote:runwithkey/>
-	</target>
-
-	<target name="-clean-remote-passwd" depends="-init, -declare-macros, -ask-password" if="remote.platform.auth.passwd">
-		<remote:cleanwithpasswd/>
-	</target>
-		
-	<target name="-clean-remote-key" depends="-init, -declare-macros, -ask-passphrase" if="remote.platform.auth.key">
-		<remote:cleanwithkey/>
-	</target>
-
-	<target name="-debug-remote-passwd" depends="-init, -declare-macros, -ask-password" if="remote.platform.auth.passwd">
-		<sshsession host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true">
-			<remotetunnel lport="${symbol_dollar}{target.debug.port}" lhost="localhost" rport="${symbol_dollar}{target.debug.port}"/>
-			<sequential>
-				<remote:runwithpasswd additionaljvmargs="${symbol_dollar}{remote.debug.jvmargs} -agentlib:jdwp=transport=dt_socket,server=y,suspend=${symbol_dollar}{remote.debug.suspend},address=${symbol_dollar}{target.platform.host}:${symbol_dollar}{target.debug.port}"/>
-			</sequential>
-		</sshsession>
-	</target>
-
-	<target name="-debug-remote-key" depends="-init, -declare-macros, -ask-passphrase" if="remote.platform.auth.key">
-		<sshsession host="${symbol_dollar}{remote.platform.host}" port="${symbol_dollar}{remote.platform.port}" username="${symbol_dollar}{remote.platform.username}" keyfile="${symbol_dollar}{remote.platform.keyfile}" passphrase="${symbol_dollar}{remote.platform.passphrase}" trust="true">
-			<remotetunnel lport="${symbol_dollar}{target.debug.port}" lhost="localhost" rport="${symbol_dollar}{target.debug.port}"/>
-			<sequential>
-				<remote:runwithkey additionaljvmargs="${symbol_dollar}{remote.debug.jvmargs} -agentlib:jdwp=transport=dt_socket,server=y,suspend=${symbol_dollar}{remote.debug.suspend},address=${symbol_dollar}{target.platform.host}:${symbol_dollar}{target.debug.port}"/>
-			</sequential>
-		</sshsession>
-	</target>
+    <target name="-check-fatjar" depends="-init">
+        <available file="${symbol_dollar}{local.dist.fatjar}" property="fatjar.exist"/>
+    </target>
     
-	<target name="build-remote" depends="-copy-remote-passwd, -copy-remote-key">
-		
-	</target>
-	
-	<target name="run-remote" depends="-run-remote-passwd, -run-remote-key">
-		
-	</target>
+    <target name="-rename-fatjar" depends="-check-fatjar" if="fatjar.exist">
+        <move file="${symbol_dollar}{local.dist.fatjar}" tofile="${symbol_dollar}{local.dist.jar}"/>
+    </target>
+    
+    <target name="-declare-macros" depends="-rename-fatjar">
+        <macrodef name="cleanwithpasswd" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
+            <sequential>
+                <sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" 
+                                 password="${symbol_dollar}{target.platform.password}" trust="true" 
+                                 command="cd '${symbol_dollar}{remote.dist.dir}'; rm -rf *.jar lib/*.jar"/>
+            </sequential>
+        </macrodef>
+        <macrodef name="cleanwithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
+            <sequential>
+                <sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}"
+                                 keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" 
+                                 command="cd '${symbol_dollar}{remote.dist.dir}'; rm -rf *.jar lib/*.jar"/>
+            </sequential>
+        </macrodef>
+        <macrodef name="copywithpasswd" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
+            <attribute name="additionaljvmargs" default=""/>
+            <sequential>
+                <sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true" command="mkdir -p '${symbol_dollar}{remote.dist.dir}'"/>
+                <scp todir="${symbol_dollar}{target.platform.username}@${symbol_dollar}{target.platform.host}:${symbol_dollar}{remote.dist.dir}" port="${symbol_dollar}{target.platform.port}" password="${symbol_dollar}{target.platform.password}" trust="true">
+                    <fileset dir="${symbol_dollar}{local.dist.dir}">
+                        <include name="*.${symbol_dollar}{project.packaging}"/>
+                        <include name="lib/*.${symbol_dollar}{project.packaging}"/>
+                    </fileset>
+                </scp>
+            </sequential>
+        </macrodef>
+        <macrodef name="copywithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
+            <attribute name="additionaljvmargs" default=""/>
+            <sequential>
+                <sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" command="mkdir -p '${symbol_dollar}{remote.dist.dir}'"/>
+                <scp todir="${symbol_dollar}{target.platform.username}@${symbol_dollar}{target.platform.host}:${symbol_dollar}{remote.dist.dir}" port="${symbol_dollar}{target.platform.port}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true">
+                    <fileset dir="${symbol_dollar}{local.dist.dir}">
+                        <include name="*.${symbol_dollar}{project.packaging}"/>
+                        <include name="lib/*.${symbol_dollar}{project.packaging}"/>
+                    </fileset>
+                </scp>
+            </sequential>
+        </macrodef>
+        <macrodef name="runwithpasswd" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
+            <attribute name="additionaljvmargs" default=""/>
+            <sequential>
+                <!--antcall target="profile-rp-calibrate-passwd"/-->
+                <sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true" usepty="true"
+                                 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} ${symbol_dollar}{project.run.cmd} ${symbol_dollar}{remote.application.args}"/>
+            </sequential>
+        </macrodef>
+        <macrodef name="runwithkey" uri="http://www.netbeans.org/ns/j2se-project/remote-platform/1">
+            <attribute name="additionaljvmargs" default=""/>
+            <sequential>
+                <!--antcall target="profile-rp-calibrate-key"/-->
+                <sshexec host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" keyfile="${symbol_dollar}{target.platform.privatekey}" passphrase="${symbol_dollar}{target.platform.passphrase}" trust="true" usepty="true"
+                                 command="cd '${symbol_dollar}{remote.project.dir}'; ${symbol_dollar}{run.mode} '${symbol_dollar}{remote.java.executable}' @{additionaljvmargs} -Dfile.encoding=${symbol_dollar}{remote.runtime.encoding} ${symbol_dollar}{remote.run.jvmargs} ${symbol_dollar}{project.run.cmd} ${symbol_dollar}{remote.application.args}"/>
+            </sequential>
+        </macrodef>
+    </target>
+        
+    <target name="-ask-password" unless="target.platform.password" if="remote.platform.auth.passwd">
+        <input message="Password ${symbol_dollar}{target.platform.user}@${symbol_dollar}{target.platform.host}:" addproperty="target.platform.password">
+            <handler type="secure"/>
+        </input>
+    </target>
 
-	<target name="clean-remote" depends="-clean-remote-passwd, -clean-remote-key">
-		
-	</target>
+    <target name="-ask-passphrase" unless="target.platform.passphrase" if="remote.platform.auth.key">
+        <input message="Passphrase ${symbol_dollar}{target.platform.user}@${symbol_dollar}{target.platform.host}:" addproperty="target.platform.passphrase">
+            <handler type="secure"/>
+        </input>
+    </target>
 
-	<target name="debug-remote" depends="-debug-remote-passwd, -debug-remote-key">
-		
-	</target>
+    <target name="-check-vm-debug" depends="-init">
+        <condition property="remote.debug.available" value="true">
+            <or>
+                <istrue value="${symbol_dollar}{target.debug.supported}"/>
+            </or>
+        </condition>
+        <fail unless="remote.debug.available" message="The Runtime JVM ${symbol_dollar}{target.platform.host} does not support debugging."/>
+    </target>
+
+    <target name="-copy-remote-passwd" depends="-init, -declare-macros, -ask-password" if="remote.platform.auth.passwd">
+        <remote:copywithpasswd/>
+    </target>
+        
+    <target name="-copy-remote-key" depends="-init, -declare-macros, -ask-passphrase" if="remote.platform.auth.key">
+        <remote:copywithkey/>
+    </target>
+
+    <target name="-run-remote-passwd" depends="-init, -declare-macros, -ask-password, -copy-remote-passwd" if="remote.platform.auth.passwd">
+        <remote:runwithpasswd/>
+    </target>
+        
+    <target name="-run-remote-key" depends="-init, -declare-macros, -ask-passphrase, -copy-remote-key" if="remote.platform.auth.key">
+        <remote:runwithkey/>
+    </target>
+
+    <target name="-clean-remote-passwd" depends="-init, -declare-macros, -ask-password" if="remote.platform.auth.passwd">
+        <remote:cleanwithpasswd/>
+    </target>
+        
+    <target name="-clean-remote-key" depends="-init, -declare-macros, -ask-passphrase" if="remote.platform.auth.key">
+        <remote:cleanwithkey/>
+    </target>
+
+    <target name="-debug-remote-passwd" depends="-init, -declare-macros, -ask-password" if="remote.platform.auth.passwd">
+        <sshsession host="${symbol_dollar}{target.platform.host}" port="${symbol_dollar}{target.platform.port}" username="${symbol_dollar}{target.platform.username}" password="${symbol_dollar}{target.platform.password}" trust="true">
+            <remotetunnel lport="${symbol_dollar}{target.debug.port}" lhost="localhost" rport="${symbol_dollar}{target.debug.port}"/>
+            <sequential>
+                <remote:runwithpasswd additionaljvmargs="${symbol_dollar}{remote.debug.jvmargs} -agentlib:jdwp=transport=dt_socket,server=y,suspend=${symbol_dollar}{remote.debug.suspend},address=${symbol_dollar}{target.platform.host}:${symbol_dollar}{target.debug.port}"/>
+            </sequential>
+        </sshsession>
+    </target>
+
+    <target name="-debug-remote-key" depends="-init, -declare-macros, -ask-passphrase" if="remote.platform.auth.key">
+        <sshsession host="${symbol_dollar}{remote.platform.host}" port="${symbol_dollar}{remote.platform.port}" username="${symbol_dollar}{remote.platform.username}" keyfile="${symbol_dollar}{remote.platform.keyfile}" passphrase="${symbol_dollar}{remote.platform.passphrase}" trust="true">
+            <remotetunnel lport="${symbol_dollar}{target.debug.port}" lhost="localhost" rport="${symbol_dollar}{target.debug.port}"/>
+            <sequential>
+                <remote:runwithkey additionaljvmargs="${symbol_dollar}{remote.debug.jvmargs} -agentlib:jdwp=transport=dt_socket,server=y,suspend=${symbol_dollar}{remote.debug.suspend},address=${symbol_dollar}{target.platform.host}:${symbol_dollar}{target.debug.port}"/>
+            </sequential>
+        </sshsession>
+    </target>
+    
+    <target name="build-remote" depends="-copy-remote-passwd, -copy-remote-key">
+        
+    </target>
+    
+    <target name="run-remote" depends="-run-remote-passwd, -run-remote-key">
+        
+    </target>
+
+    <target name="clean-remote" depends="-clean-remote-passwd, -clean-remote-key">
+        
+    </target>
+
+    <target name="debug-remote" depends="-debug-remote-passwd, -debug-remote-key">
+        
+    </target>
 
 </project>

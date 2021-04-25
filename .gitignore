@@ -1,1 +1,6 @@
 /nbactions.xml
+target
+# IntelliJ IDEA files
+.idea
+raspimaven-archetype.iml
+

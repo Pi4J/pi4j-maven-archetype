@@ -22,59 +22,59 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ${main-class} {
 
-	private static final int PIN_LED = 22; // PIN 15 = BCM 22
-	private static final Console console = new Console();
+    private static final int PIN_LED = 22; // PIN 15 = BCM 22
+    private static final Console console = new Console();
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String[] args) throws Exception {
-		console.box("Hello Rasbian world !");
-		Context pi4j = null;
-		try {
-			pi4j = Pi4J.newAutoContext();
-			new ${main-class}().run(pi4j);
-		} catch (InvocationTargetException e) {
-			console.println("Error: " + e.getTargetException().getMessage());
-		} catch (Exception e) {
-			console.println("Error: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (pi4j != null) {
-				pi4j.shutdown();
-			}
-		}
-	}
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) throws Exception {
+        console.box("Hello Rasbian world !");
+        Context pi4j = null;
+        try {
+            pi4j = Pi4J.newAutoContext();
+            new ${main-class}().run(pi4j);
+        } catch (InvocationTargetException e) {
+            console.println("Error: " + e.getTargetException().getMessage());
+        } catch (Exception e) {
+            console.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (pi4j != null) {
+                pi4j.shutdown();
+            }
+        }
+    }
 
-	private void run(Context pi4j) throws Exception {
-		Platforms platforms = pi4j.platforms();
+    private void run(Context pi4j) throws Exception {
+        Platforms platforms = pi4j.platforms();
 
-		console.box("Pi4J PLATFORMS");
-		console.println();
-		platforms.describe().print(System.out);
-		console.println();
+        console.box("Pi4J PLATFORMS");
+        console.println();
+        platforms.describe().print(System.out);
+        console.println();
 
-		var ledConfig = DigitalOutput.newConfigBuilder(pi4j)
-						.id("led")
-						.name("LED Flasher")
-						.address(PIN_LED)
-						.shutdown(DigitalState.LOW)
-						.initial(DigitalState.LOW)
-						.provider("pigpio-digital-output");
+        var ledConfig = DigitalOutput.newConfigBuilder(pi4j)
+                        .id("led")
+                        .name("LED Flasher")
+                        .address(PIN_LED)
+                        .shutdown(DigitalState.LOW)
+                        .initial(DigitalState.LOW)
+                        .provider("pigpio-digital-output");
 
-		var led = pi4j.create(ledConfig);
-		int counter = 0;
-		while (counter < 50) {
-			if (led.equals(DigitalState.HIGH)) {
-				led.low();
-				System.out.println("low");
-			} else {
-				led.high();
-				System.out.println("high");
-			}
-			Thread.sleep(500);
-			counter++;
-		}
-	}
+        var led = pi4j.create(ledConfig);
+        int counter = 0;
+        while (counter < 50) {
+            if (led.equals(DigitalState.HIGH)) {
+                led.low();
+                System.out.println("low");
+            } else {
+                led.high();
+                System.out.println("high");
+            }
+            Thread.sleep(500);
+            counter++;
+        }
+    }
 
 }
