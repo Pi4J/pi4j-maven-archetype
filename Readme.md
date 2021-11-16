@@ -105,6 +105,33 @@ To start a debugging session:
 - in your IDE start the debugger setting the host IP = _target IP_ and port = _port configured in raspberry.properties_
 You should be able to set remote breakpoints, execute step by step, examine variables on your remote program.
 
+### Note on JRE
+
+If you are not using the default Raspberry Pi OS full edition and/or included Java, you may get this kind of error:
+
+```shell
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-antrun-plugin:3.0.0:run (exec) on project ...: An Ant BuildException has occured: The following error occurred while executing this line:
+[ERROR] ...\antrun\build.xml:166: The following error occurred while executing this line:
+[ERROR] ...\antrun\build.xml:123: Remote command failed with exit status 1
+[ERROR] around Ant part ...... @ 9:59 in ...\antrun\build-main.xml
+```
+
+This can be caused by a mis-configured Java runtime. The default value in `raspberry.properties` is:
+
+```
+target.remote.jre=/usr/lib/jvm/default-java
+```
+
+Check if this value exists and links to your Java runtime, or find the location of your installed JDK with 
+`sudo find / -iname java` and use the result in your configuration.
+
+For instance: a Raspberry Pi Zero (type 1) with ARMv6 requires a specific Java version for this type of processor. If 
+you use Azul Zulu JDK, you will need to change the configuration to:
+
+```
+target.remote.jre=/usr/lib/jvm/zulu11.41.75-ca-jdk11.0.8-linux_aarch32hf
+```
+
 ## Some final notes ##
 
 ### PI4J version
