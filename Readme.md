@@ -126,7 +126,7 @@ Check if this value exists and links to your Java runtime, or find the location 
 `sudo find / -iname java` and use the result in your configuration.
 
 For instance: a Raspberry Pi Zero (type 1) with ARMv6 requires a specific Java version for this type of processor. This
-is described more in detail on ["Java for ARMv6/7/8](https://pi4j.com/documentation/java-installation/). If you use Azul 
+is described more in detail on ["Java for ARMv6/7/8"](https://pi4j.com/documentation/java-installation/). If you use Azul 
 Zulu JDK, you will need to change the configuration to:
 
 ```
