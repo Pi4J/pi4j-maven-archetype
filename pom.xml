@@ -12,12 +12,12 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
-    <groovy-all-version>3.0.7</groovy-all-version>
+    <groovy-all-version>4.0.18</groovy-all-version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
+      <groupId>org.apache.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>${groovy-all-version}</version>
       <type>pom</type>

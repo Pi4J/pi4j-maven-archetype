@@ -1,15 +1,15 @@
-# A maven archetype to generate PI4J V2 project skeletons
+# A Maven archetype to generate Pi4J V2 project skeletons
 
-This Maven archetype can generate PI4J-V2 project templates with remote build, run and debug capability.
+This Maven archetype can generate Pi4J-V2 project templates with remote build, run and debug capability.
 A template project generated with this archetype can:
 
-- Handle a connection to many RPI targets, configured in the pom.xml file
+- Handle a connection to many Raspberry Pi targets, configured in the pom.xml file
 - Compile your code, packing the compiled code in a jar, uploading it and all the other required jars on the selected remote target
 - Run the program on the remote target
 - Open a remote debugging session
 
-The archetype is IDE agnostic (I tested it using Netbeans) and depends only on maven and ant. You should be able to use it with your preferred IDE 
-program (Netbeans, Eclipse, Idea or whatever else)
+The archetype is IDE agnostic (I tested it using Netbeans) and depends only on Maven and ant. You should be able to use it with your preferred IDE 
+program (Netbeans, Eclipse, Idea or whatever else).
 
 # Getting started
 
@@ -36,6 +36,7 @@ Now suppose you want to begin a new PI4J-V2 project _my-project_:
 ### Configuring your new project
 
 Before starting the new project generation, the archetype asks you some configuration data:
+
 1. _Choose archetype:_ select the _raspimaven-archetype_ from the list shown
 1. _Define value for property 'groupId':_ choose the Maven groupId for your project. (If don't know what is a groupId, don't worry, just type _com.example_)
 1. _Define value for property 'artifactId':_ choose a name for the program executable your project will produce
