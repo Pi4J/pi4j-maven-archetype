@@ -8,7 +8,7 @@ A template project generated with this archetype can:
 - Run the program on the remote target
 - Open a remote debugging session
 
-The archetype is IDE agnostic (I tested it using Netbeans) and depends only on Maven and ant. You should be able to use it with your preferred IDE 
+The archetype is IDE agnostic (_I tested it using Netbeans_) and depends only on Maven and ant. You should be able to use it with your preferred IDE 
 program (Netbeans, Eclipse, Idea or whatever else).
 
 # Getting started
@@ -22,7 +22,7 @@ You must have the Maven tool installed on your computer. If not, you can downloa
 ## Install the archetype to your local .m2 repository
 
 - Unzip the archetype file in a _FOLDER_
-- `cd FOLDER/pi4j-maven-archetype-master`
+- `cd FOLDER/pi4j-maven-archetype`
 - `mvn install`
 
 ## How to generate a new PI4J V2 skeleton project
