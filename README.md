@@ -1,6 +1,6 @@
 # A Maven archetype to generate Pi4J V2 project skeletons
 
-This Maven archetype can generate Pi4J-V2 project templates with remote build, run and debug capability.
+This Maven archetype can generate Pi4J V2 project templates with remote build, run and debug capability.
 A template project generated with this archetype can:
 
 - Handle a connection to many Raspberry Pi targets, configured in the pom.xml file
@@ -21,8 +21,10 @@ You must have the Maven tool installed on your computer. If not, you can downloa
 
 ## Install the archetype to your local .m2 repository
 
+Download this Github Pi4J Project by clicking on the green "Code" button and selecting "Download ZIP".
+
 - Unzip the archetype file in a _FOLDER_
-- `cd FOLDER/pi4j-maven-archetype`
+- `cd FOLDER/pi4j-maven-archetype-main`
 - `mvn install`
 
 ## How to generate a new PI4J V2 skeleton project
@@ -37,7 +39,7 @@ Now suppose you want to begin a new PI4J-V2 project _my-project_:
 
 Before starting the new project generation, the archetype asks you some configuration data:
 
-1. _Choose archetype:_ select the _raspimaven-archetype_ from the list shown
+1. _Choose archetype:_ select the _pi4j-maven-archetype_ from the list shown
 1. _Define value for property 'groupId':_ choose the Maven groupId for your project. (If don't know what is a groupId, don't worry, just type _com.example_)
 1. _Define value for property 'artifactId':_ choose a name for the program executable your project will produce
 1. _Define value for property 'version':  1.0-SNAPSHOT:_ type Enter to accept the default value shown, or type the initial version, something like _1.0.0_
@@ -54,7 +56,7 @@ with your preferred java IDE. The IDE should be able to recognize the project as
 
 If you deploy the archetype in a remote repository, use this command to generate a new skeleton project:
 
-`mvn archetype:generate -DarchetypeGroupId=it.lb.rasp -DarchetypeArtifactId=raspimaven-archetype -DarchetypeVersion=1.0-SNAPSHOT`
+`mvn archetype:generate -DarchetypeGroupId=com.pi4j -DarchetypeArtifactId=pi4j-maven-archetype -DarchetypeVersion=1.0-SNAPSHOT`
 
 # The generated skeleton project
 
