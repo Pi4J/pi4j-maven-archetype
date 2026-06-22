@@ -15,6 +15,10 @@ program (Netbeans, Eclipse, Idea or whatever else).
 
 Follow these steps to set up the archetype and use it:
 
+## Install Java
+
+Java 25 or newer is required.
+
 ## Install Maven
 
 You must have the Maven tool installed on your computer. If not, you can download it from https://maven.apache.org/
@@ -140,7 +144,7 @@ target.remote.jre=/usr/lib/jvm/zulu11.41.75-ca-jdk11.0.8-linux_aarch32hf
 
 ### PI4J version
 
-The _pom.xml_ file adds the pi4j v.2.1.0 jar dependencies to the project classpath. You may want to update to the latest version
+The _pom.xml_ file adds the pi4j jar dependencies to the project classpath. You may want to update to the latest version
 
 ### File "_nbactions-template.xml_"
 
